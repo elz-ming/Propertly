@@ -1,6 +1,8 @@
 from cgi import test
 from dictionary import *
+from data import sale_data, rent_data
 from data import sale_x_train, sale_x_test, sale_y_train, sale_y_test
+from data import rent_x_train, rent_x_test, rent_y_train, rent_y_test
 
 import streamlit as st
 import numpy as np
@@ -15,10 +17,24 @@ from functions import regressor
 
 #Main Body
 st.title("PROPERTLY")
-st.markdown("This is a simple app to demonstrate the performance of supervised machine learning models (regression) on datasets scaped from the internet.")
+st.header('Introduction')
+st.markdown("This is a simple app to demonstrate the performance of supervised machine learning models (regression) on two datasets scaped from the internet.")
 st.markdown("The datasets consists of : ")
-st.markdown("1. Property selling price listed on iProperty, features : District, State, Type, Details, Bedrooms, Bathrooms, Carparks")
-st.markdown("2. Property rental price listed on iProperty, features : District, State, Type, Details, Bedrooms, Bathrooms, Carparks")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("1. Property selling price listed on iProperty, features : District, State, Type, Details, Bedrooms, Bathrooms, Carparks")
+    show_sale = st.checkbox('Show SALE DataFrame')
+    if show_sale:
+        st.markdown('Rows : {}, Columns : {}'.format(sale_data.shape[0],sale_data.shape[1]))
+        sale_data
+with col2:
+    st.markdown("2. Property rental price listed on iProperty, features : District, State, Type, Details, Bedrooms, Bathrooms, Carparks")
+    show_rent = st.checkbox('Show RENT DataFrame')
+    if show_rent:
+        st.markdown('Rows : {}, Columns : {}'.format(rent_data.shape[0],rent_data.shape[1]))
+        rent_data
 
 #Side Bar
 st.sidebar.title("Let's Build Model(s)")
@@ -39,7 +55,6 @@ if type_input == 'Single Model':
     if regressor_input == 'Decision Tree Regressor':
         model_id = 'dt'
         hyperparameters = {
-            'decisiontreeregressor__ccp_alpha'                : [st.sidebar.number_input(label='ccp_alpha', min_value=0.0, value=0.0)],
             'decisiontreeregressor__min_samples_leaf'         : [st.sidebar.number_input(label='min_samples_leaf', min_value=1, value=1)],
             'decisiontreeregressor__min_samples_split'        : [st.sidebar.number_input(label='min_samples_split', min_value=2, value=2)],
             'decisiontreeregressor__max_depth'                : [st.sidebar.number_input(label='max_depth', min_value=1, value=5)],
@@ -50,7 +65,6 @@ if type_input == 'Single Model':
         model_id = 'rf'
         hyperparameters = {
             'randomforestregressor__n_estimators'             : [st.sidebar.number_input(label='n_estimators', min_value=10, value=100)],            
-            'randomforestregressor__ccp_alpha'                : [st.sidebar.number_input(label='ccp_alpha', min_value=0.0, value=0.0)],
             'randomforestregressor__min_samples_leaf'         : [st.sidebar.number_input(label='min_samples_leaf', min_value=1, value=1)],
             'randomforestregressor__min_samples_split'        : [st.sidebar.number_input(label='min_samples_split', min_value=2, value=2)],
             'randomforestregressor__max_depth'                : [st.sidebar.number_input(label='max_depth', min_value=1, value=5)],
@@ -108,19 +122,35 @@ if type_input == 'Single Model':
             'mlpregressor__hidden_layer_sizes'  : [hidden_layer_sizes],
         }
 
+
+
     if st.sidebar.button('Train'):
         sale_metrics_dict = regressor(
-            pipeline_dict[model_id],
-            hyperparameters,
-            sale_x_train,
-            sale_x_test,
-            sale_y_train,
-            sale_y_test
-        )
+                pipeline_dict[model_id],
+                hyperparameters,
+                sale_x_train,
+                sale_x_test,
+                sale_y_train,
+                sale_y_test
+            )
+        rent_metrics_dict = regressor(
+                pipeline_dict[model_id],
+                hyperparameters,
+                rent_x_train,
+                rent_x_test,
+                rent_y_train,
+                rent_y_test
+            )
 
-        for key, value in sale_metrics_dict.items():
-            st.markdown(key)
-            st.markdown(value)
+        with col1:
+            st.subheader("SALE DataSet ({})".format(regressor_input))
+            for key, value in sale_metrics_dict.items():
+                st.markdown('{} : {}'.format(key, value))
+        
+        with col2:
+            st.subheader("RENT DataSet ({})".format(regressor_input))
+            for key, value in rent_metrics_dict.items():
+                st.markdown('{} : {}'.format(key, value))
 
 
 elif type_input == 'Multi Models':
@@ -136,45 +166,82 @@ elif type_input == 'Multi Models':
 
     model_id_list =[]
     model_list =[]
-    train_score_list = []
-    test_score_list = []
-    R2_list = []
-    RMSE_list = []
-    MAE_list = []
-    MAPE_list = []
+
+    train_score_list_sale = []
+    test_score_list_sale  = []
+    R2_list_sale          = []
+    RMSE_list_sale        = []
+    MAE_list_sale         = []
+    MAPE_list_sale        = []
+
+    train_score_list_rent = []
+    test_score_list_rent  = []
+    R2_list_rent          = []
+    RMSE_list_rent        = []
+    MAE_list_rent         = []
+    MAPE_list_rent        = []
 
     for model_id in selected_model_ids:
-        sales_metrics_dict = regressor(
+        sale_metrics_dict = regressor(
             pipeline_dict[model_id],
             hyperparameters_dict[model_id],
             sale_x_train,
             sale_x_test,
             sale_y_train,
-            sale_y_test
+            sale_y_test,
+        )
+
+        rent_metrics_dict = regressor(
+            pipeline_dict[model_id],
+            hyperparameters_dict[model_id],
+            rent_x_train,
+            rent_x_test,
+            rent_y_train,
+            rent_y_test,
         )
 
         model_id_list.append(model_id)
         model_list.append(model_dict[model_id])
-        train_score_list.append(sales_metrics_dict['train_score'])
-        test_score_list.append(sales_metrics_dict['test_score'])
-        R2_list.append(sales_metrics_dict['R2'])
-        RMSE_list.append(sales_metrics_dict['RMSE'])
-        MAE_list.append(sales_metrics_dict['MAE'])
-        MAPE_list.append(sales_metrics_dict['MAPE'])
+
+        train_score_list_sale.append(sale_metrics_dict['train_score'])
+        test_score_list_sale.append(sale_metrics_dict['test_score'])
+        R2_list_sale.append(sale_metrics_dict['R2'])
+        RMSE_list_sale.append(sale_metrics_dict['RMSE'])
+        MAE_list_sale.append(sale_metrics_dict['MAE'])
+        MAPE_list_sale.append(sale_metrics_dict['MAPE'])
+
+        train_score_list_rent.append(rent_metrics_dict['train_score'])
+        test_score_list_rent.append(rent_metrics_dict['test_score'])
+        R2_list_rent.append(rent_metrics_dict['R2'])
+        RMSE_list_rent.append(rent_metrics_dict['RMSE'])
+        MAE_list_rent.append(rent_metrics_dict['MAE'])
+        MAPE_list_rent.append(rent_metrics_dict['MAPE'])
 
 
-    model2sales_metrics_dict = {
-        'model_id':model_id_list,
-        'model':model_list,
-        'train_score':train_score_list,
-        'test_score':test_score_list,
-        'R2':R2_list,
-        'RMSE':RMSE_list,
-        'MAE':MAE_list,
-        'MAPE':MAPE_list,
+    model2sale_metrics_dict = {
+        'model_id'    : model_id_list,
+        'model'       : model_list,
+        'train_score' : train_score_list_sale,
+        'test_score'  : test_score_list_sale,
+        'R2'          : R2_list_sale,
+        'RMSE'        : RMSE_list_sale,
+        'MAE'         : MAE_list_sale,
+        'MAPE'        : MAPE_list_sale,
     }
 
-    sales_metrics_df = pd.DataFrame.from_dict(model2sales_metrics_dict)
+    model2rent_metrics_dict = {
+        'model_id'    : model_id_list,
+        'model'       : model_list,
+        'train_score' : train_score_list_rent,
+        'test_score'  : test_score_list_rent,
+        'R2'          : R2_list_rent,
+        'RMSE'        : RMSE_list_rent,
+        'MAE'         : MAE_list_rent,
+        'MAPE'        : MAPE_list_rent,
+    }
+
+    sale_metrics_df = pd.DataFrame.from_dict(model2sale_metrics_dict)
+    rent_metrics_df = pd.DataFrame.from_dict(model2rent_metrics_dict)
 
     st.sidebar.subheader('Metrics')
     train_score = st.sidebar.checkbox('Train Score')
@@ -185,14 +252,20 @@ elif type_input == 'Multi Models':
     MAPE = st.sidebar.checkbox('MAPE')
 
     if train_score:
-        st.bar_chart(data=sales_metrics_df, x='model', y='train_score')
+        col1.bar_chart(data=sale_metrics_df, x='model', y='train_score')
+        col2.bar_chart(data=rent_metrics_df, x='model', y='train_score')
     if test_score:
-        st.bar_chart(data=sales_metrics_df, x='model', y='test_score')
+        col1.bar_chart(data=sale_metrics_df, x='model', y='test_score')
+        col2.bar_chart(data=rent_metrics_df, x='model', y='test_score')
     if R2:
-        st.bar_chart(data=sales_metrics_df, x='model', y='R2')
+        col1.bar_chart(data=sale_metrics_df, x='model', y='R2')
+        col2.bar_chart(data=rent_metrics_df, x='model', y='R2')
     if RMSE:
-        st.bar_chart(data=sales_metrics_df, x='model', y='RMSE')    
+        col1.bar_chart(data=sale_metrics_df, x='model', y='RMSE')
+        col2.bar_chart(data=rent_metrics_df, x='model', y='RMSE')
     if MAE:
-        st.bar_chart(data=sales_metrics_df, x='model', y='MAE')    
+        col1.bar_chart(data=sale_metrics_df, x='model', y='MAE')
+        col2.bar_chart(data=rent_metrics_df, x='model', y='MAE')
     if MAPE:
-        st.bar_chart(data=sales_metrics_df, x='model', y='MAPE')    
+        col1.bar_chart(data=sale_metrics_df, x='model', y='MAPE')
+        col2.bar_chart(data=rent_metrics_df, x='model', y='MAPE')
