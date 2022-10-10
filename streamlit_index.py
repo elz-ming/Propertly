@@ -1,8 +1,8 @@
 from cgi import test
-from dictionary import *
-from data import sale_data, rent_data
-from data import sale_x_train, sale_x_test, sale_y_train, sale_y_test
-from data import rent_x_train, rent_x_test, rent_y_train, rent_y_test
+from Streamlit.dictionary import *
+from Streamlit.data import sale_data, rent_data
+from Streamlit.data import sale_x_train, sale_x_test, sale_y_train, sale_y_test
+from Streamlit.data import rent_x_train, rent_x_test, rent_y_train, rent_y_test
 
 import streamlit as st
 import numpy as np
@@ -11,7 +11,7 @@ import plotly.express as px
 
 from sklearn.model_selection import GridSearchCV
 
-from functions import regressor
+from Streamlit.functions import regressor
 
 #========== CODE BELOW ==========#
 
