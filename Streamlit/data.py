@@ -4,8 +4,8 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 
-SALE_DATA_URL = ("https://raw.githubusercontent.com/elz-ming/Propertly/main/JupyterNotebook/data/iProperty_sale_to_be_trained.csv")
-RENT_DATA_URL = ("https://raw.githubusercontent.com/elz-ming/Propertly/main/JupyterNotebook/data/iProperty_rent_to_be_trained.csv")
+SALE_DATA_URL = ("https://raw.githubusercontent.com/elz-ming/Propertly/main/data/iProperty_sale_to_be_trained.csv")
+RENT_DATA_URL = ("https://raw.githubusercontent.com/elz-ming/Propertly/main/data/iProperty_rent_to_be_trained.csv")
 
 sale_data = pd.read_csv(SALE_DATA_URL)
 sale_data_fe = feature_engineering(sale_data)
