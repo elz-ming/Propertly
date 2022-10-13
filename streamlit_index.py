@@ -24,13 +24,13 @@ st.markdown("The datasets consists of : ")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("1. Property selling price listed on iProperty, features : District, State, Type, Details, Bedrooms, Bathrooms, Carparks")
+    st.markdown("1. Property sale price listed on iProperty, features : District, State, Type, Details, Bedrooms, Bathrooms, Carparks")
     show_sale = st.checkbox('Show SALE DataFrame')
     if show_sale:
         st.markdown('Rows : {}, Columns : {}'.format(sale_data.shape[0],sale_data.shape[1]))
         sale_data
 with col2:
-    st.markdown("2. Property rental price listed on iProperty, features : District, State, Type, Details, Bedrooms, Bathrooms, Carparks")
+    st.markdown("2. Property rent price listed on iProperty, features : District, State, Type, Details, Bedrooms, Bathrooms, Carparks")
     show_rent = st.checkbox('Show RENT DataFrame')
     if show_rent:
         st.markdown('Rows : {}, Columns : {}'.format(rent_data.shape[0],rent_data.shape[1]))
@@ -55,49 +55,51 @@ if type_input == 'Single Model':
     if regressor_input == 'Decision Tree Regressor':
         model_id = 'dt'
         hyperparameters = {
-            'decisiontreeregressor__min_samples_leaf'         : [st.sidebar.number_input(label='min_samples_leaf', min_value=1, value=1)],
-            'decisiontreeregressor__min_samples_split'        : [st.sidebar.number_input(label='min_samples_split', min_value=2, value=2)],
-            'decisiontreeregressor__max_depth'                : [st.sidebar.number_input(label='max_depth', min_value=1, value=5)],
-            'decisiontreeregressor__min_weight_fraction_leaf' : [st.sidebar.number_input(label='min_weight_fraction_leaf', min_value=0.0, value=0.0)]
+            'min_samples_leaf'         : st.sidebar.number_input(label='min_samples_leaf', min_value=1, value=1),
+            'min_samples_split'        : st.sidebar.number_input(label='min_samples_split', min_value=2, value=2),
+            'max_depth'                : st.sidebar.number_input(label='max_depth', min_value=1, value=5),
+            'min_weight_fraction_leaf' : st.sidebar.number_input(label='min_weight_fraction_leaf', min_value=0.0, value=0.0),
         }
 
     elif regressor_input == 'Random Forest Regressor':
         model_id = 'rf'
         hyperparameters = {
-            'randomforestregressor__n_estimators'             : [st.sidebar.number_input(label='n_estimators', min_value=10, value=100)],            
-            'randomforestregressor__min_samples_leaf'         : [st.sidebar.number_input(label='min_samples_leaf', min_value=1, value=1)],
-            'randomforestregressor__min_samples_split'        : [st.sidebar.number_input(label='min_samples_split', min_value=2, value=2)],
-            'randomforestregressor__max_depth'                : [st.sidebar.number_input(label='max_depth', min_value=1, value=5)],
-            'randomforestregressor__min_weight_fraction_leaf' : [st.sidebar.number_input(label='min_weight_fraction_leaf', min_value=0.0, value=0.0)],
+            'n_estimators'             : st.sidebar.number_input(label='n_estimators', min_value=10, value=100),            
+            'min_samples_leaf'         : st.sidebar.number_input(label='min_samples_leaf', min_value=1, value=1),
+            'min_samples_split'        : st.sidebar.number_input(label='min_samples_split', min_value=2, value=2),
+            'max_depth'                : st.sidebar.number_input(label='max_depth', min_value=1, value=5),
+            'min_weight_fraction_leaf' : st.sidebar.number_input(label='min_weight_fraction_leaf', min_value=0.0, value=0.0),
+            'n_jobs'                   : -1,
         }
 
     elif regressor_input == 'Support Vector Machine Regressor':
         model_id = 'sv'
         hyperparameters = {
-            'svr__kernel'  : [st.sidebar.selectbox(label='kernel', options=('poly', 'rbf', 'sigmoid'), index=1)],
-            'svr__C'       : [st.sidebar.number_input(label='C', min_value=1.0, value=1.0)],
-            'svr__gamma'   : [st.sidebar.selectbox(label='gamma', options=('scale', 'auto'), index=0)],
-            'svr__epsilon' : [st.sidebar.number_input(label='epsilon', min_value=0.1, value=0.1)],
+            'kernel'  : st.sidebar.selectbox(label='kernel', options=('poly', 'rbf', 'sigmoid'), index=1),
+            'C'       : st.sidebar.number_input(label='C', min_value=1.0, value=1.0),
+            'gamma'   : st.sidebar.selectbox(label='gamma', options=('scale', 'auto'), index=0),
+            'epsilon' : st.sidebar.number_input(label='epsilon', min_value=0.1, value=0.1),
         }
 
     elif regressor_input == 'K Neighbors Regressor':
         model_id = 'kn'
         hyperparameters = {
-            'kneighborsregressor__algorithm' : [st.sidebar.selectbox(label='algorithm', options=('auto', 'ball_tree', 'kd_tree'), index=0)],
-            'kneighborsregressor__leaf_size' : [st.sidebar.number_input(label='leaf_size', min_value=10, value=30)],
-            'kneighborsregressor__weights'   : [st.sidebar.selectbox(label='weights', options=('uniform', 'distance'), index = 0)],
+            'algorithm' : st.sidebar.selectbox(label='algorithm', options=('auto', 'ball_tree', 'kd_tree'), index=0),
+            'leaf_size' : st.sidebar.number_input(label='leaf_size', min_value=10, value=30),
+            'weights'   : st.sidebar.selectbox(label='weights', options=('uniform', 'distance'), index = 0),
+            'n_jobs'    : -1,
         }
 
     elif regressor_input == 'Gradient Boosting Regressor':
         model_id = 'gb'
         hyperparameters = {
-            'gradientboostingregressor__learning_rate'       : [st.sidebar.number_input(label='learning rate', min_value=0.001, value=0.1)],
-            'gradientboostingregressor__n_estimators'        : [st.sidebar.number_input(label='n_estimators', min_value=10, value=100)],
-            'gradientboostingregressor__validation_fraction' : [st.sidebar.number_input(label='validation_fraction', min_value=0.01, value=0.1)],
-            'gradientboostingregressor__ccp_alpha'           : [st.sidebar.number_input(label='ccp_alpha', min_value=0.0, value=0.0)],
-            'gradientboostingregressor__min_samples_leaf'    : [st.sidebar.number_input(label='min_samples_leaf', min_value=1, value=1)],
-            'gradientboostingregressor__min_samples_split'   : [st.sidebar.number_input(label='min_samples_split', min_value=2, value=2)],
-            'gradientboostingregressor__max_depth'           : [st.sidebar.number_input(label='max_depth', min_value=1, value=3)]
+            'learning_rate'       : st.sidebar.number_input(label='learning rate', min_value=0.001, value=0.1),
+            'n_estimators'        : st.sidebar.number_input(label='n_estimators', min_value=10, value=100),
+            'validation_fraction' : st.sidebar.number_input(label='validation_fraction', min_value=0.01, value=0.1),
+            'ccp_alpha'           : st.sidebar.number_input(label='ccp_alpha', min_value=0.0, value=0.0),
+            'min_samples_leaf'    : st.sidebar.number_input(label='min_samples_leaf', min_value=1, value=1),
+            'min_samples_split'   : st.sidebar.number_input(label='min_samples_split', min_value=2, value=2),
+            'max_depth'           : st.sidebar.number_input(label='max_depth', min_value=1, value=3),
         }
 
     elif regressor_input == 'Neural Network Regressor':
@@ -107,19 +109,19 @@ if type_input == 'Single Model':
         third = st.sidebar.number_input(label='third layer', min_value=0, max_value=1000, value = 0)
         if second == 0 & third == 0:
             hidden_layer_sizes = (first,)
-        elif third == 0:
+        elif second == 0 | third == 0:
             hidden_layer_sizes = (first, second,)
         else:
             hidden_layer_sizes = (first, second, third,)
         hyperparameters = {
-            'mlpregressor__activation'          : [st.sidebar.selectbox(label='activation', options=('identity', 'logistic', 'tanh', 'relu'), index=3)],
-            'mlpregressor__solver'              : [st.sidebar.selectbox(label='activation', options=('lbfgs', 'sgd', 'adam'), index=2)],
-            'mlpregressor__alpha'               : [st.sidebar.number_input(label='alpha', min_value=0.0001, value=0.0001)],
-            'mlpregressor__learning_rate'       : [st.sidebar.selectbox(label='learning rate', options=('constant', 'invscaling', 'adaptive'), index=0)],
-            'mlpregressor__learning_rate_init'  : [st.sidebar.number_input(label='learning_rate_init', min_value=0.001, value=0.001)],
-            'mlpregressor__max_iter'            : [st.sidebar.number_input(label='epochs', min_value=1, max_value=1000, value=200)],
-            'mlpregressor__validation_fraction' : [st.sidebar.number_input(label='validation_fraction', min_value=0.01, value=0.1)],
-            'mlpregressor__hidden_layer_sizes'  : [hidden_layer_sizes],
+            'activation'          : st.sidebar.selectbox(label='activation', options=('identity', 'logistic', 'tanh', 'relu'), index=3),
+            'solver'              : st.sidebar.selectbox(label='activation', options=('lbfgs', 'sgd', 'adam'), index=2),
+            'alpha'               : st.sidebar.number_input(label='alpha', min_value=0.0001, value=0.0001),
+            'learning_rate'       : st.sidebar.selectbox(label='learning rate', options=('constant', 'invscaling', 'adaptive'), index=0),
+            'learning_rate_init'  : st.sidebar.number_input(label='learning_rate_init', min_value=0.001, value=0.001),
+            'max_iter'            : st.sidebar.number_input(label='epochs', min_value=1, max_value=1000, value=200),
+            'validation_fraction' : st.sidebar.number_input(label='validation_fraction', min_value=0.01, value=0.1),
+            'hidden_layer_sizes'  : hidden_layer_sizes,
         }
 
 

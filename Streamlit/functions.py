@@ -31,8 +31,9 @@ def feature_engineering(DataFrame):
 
     return df
 
-def regressor(Pipeline, Hyperparameters, x_train, x_test, y_train, y_test):
-    model = GridSearchCV(Pipeline, Hyperparameters,verbose=4, n_jobs=-1)
+def regressor(Model, Hyperparameters, x_train, x_test, y_train, y_test):
+    model = Model
+    model.set_params(**Hyperparameters)
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
 
