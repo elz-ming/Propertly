@@ -48,7 +48,7 @@ type_input = st.sidebar.radio(
 if type_input == 'Single Model':
     regressor_input = st.sidebar.selectbox(
         'Regressor',
-        ('Decision Tree Regressor', 'Random Forest Regressor', 'Support Vector Machine Regressor',  'K Neighbors Regressor', 'Gradient Boosting Regressor', 'Neural Network Regressor')
+        ('Decision Tree Regressor', 'Random Forest Regressor', 'Support Vector Machine Regressor',  'K Neighbors Regressor', 'Gradient Boosting Regressor', 'Neural Network Regressor', 'XGB Regressor')
     )
     st.sidebar.subheader('Parameters')
 
@@ -123,7 +123,18 @@ if type_input == 'Single Model':
             'validation_fraction' : st.sidebar.number_input(label='validation_fraction', min_value=0.01, value=0.1),
             'hidden_layer_sizes'  : hidden_layer_sizes,
         }
-
+    
+    elif regressor_input == 'XGB Regressor':
+        model_id = 'xg'
+        hyperparameters = {
+            'eta'          : st.sidebar.number_input(label='learning rate', min_value=0.001, value=0.2),
+            'n_estimators' : st.sidebar.number_input(label='n_estimators', min_value=10, value=300),
+            'alpha'        : st.sidebar.number_input(label='alpha', min_value=0.0, value=0.2),
+            'lambda'       : st.sidebar.number_input(label='lambda', min_value=1.0, value=1.0),
+            'max_depth'    : st.sidebar.number_input(label='max_depth', min_value=1, value=5),
+            'colsample_bytree': st.sidebar.number_input(label='colsample_bytree', min_value=0.0, max_value=1.0, value=0.9),
+            'subsample': st.sidebar.number_input(label='subsample', min_value=0.0, max_value=1.0, value=0.8),
+        }
 
 
     if st.sidebar.button('Train'):
@@ -158,7 +169,7 @@ if type_input == 'Single Model':
 elif type_input == 'Multi Models':
     regressor_input = st.sidebar.multiselect(
         'Regressors',
-        ['Decision Tree Regressor', 'Random Forest Regressor', 'Support Vector Machine Regressor',  'K Neighbors Regressor', 'Gradient Boosting Regressor', 'Neural Network Regressor']
+        ['Decision Tree Regressor', 'Random Forest Regressor', 'Support Vector Machine Regressor',  'K Neighbors Regressor', 'Gradient Boosting Regressor', 'Neural Network Regressor', 'XGB Regressor']
     )
 
     selected_model_ids = []
@@ -169,15 +180,11 @@ elif type_input == 'Multi Models':
     model_id_list =[]
     model_list =[]
 
-    train_score_list_sale = []
-    test_score_list_sale  = []
     R2_list_sale          = []
     RMSE_list_sale        = []
     MAE_list_sale         = []
     MAPE_list_sale        = []
 
-    train_score_list_rent = []
-    test_score_list_rent  = []
     R2_list_rent          = []
     RMSE_list_rent        = []
     MAE_list_rent         = []
@@ -205,15 +212,11 @@ elif type_input == 'Multi Models':
         model_id_list.append(model_id)
         model_list.append(model_dict[model_id])
 
-        train_score_list_sale.append(sale_metrics_dict['train_score'])
-        test_score_list_sale.append(sale_metrics_dict['test_score'])
         R2_list_sale.append(sale_metrics_dict['R2'])
         RMSE_list_sale.append(sale_metrics_dict['RMSE'])
         MAE_list_sale.append(sale_metrics_dict['MAE'])
         MAPE_list_sale.append(sale_metrics_dict['MAPE'])
 
-        train_score_list_rent.append(rent_metrics_dict['train_score'])
-        test_score_list_rent.append(rent_metrics_dict['test_score'])
         R2_list_rent.append(rent_metrics_dict['R2'])
         RMSE_list_rent.append(rent_metrics_dict['RMSE'])
         MAE_list_rent.append(rent_metrics_dict['MAE'])
@@ -223,8 +226,6 @@ elif type_input == 'Multi Models':
     model2sale_metrics_dict = {
         'model_id'    : model_id_list,
         'model'       : model_list,
-        'train_score' : train_score_list_sale,
-        'test_score'  : test_score_list_sale,
         'R2'          : R2_list_sale,
         'RMSE'        : RMSE_list_sale,
         'MAE'         : MAE_list_sale,
@@ -234,8 +235,6 @@ elif type_input == 'Multi Models':
     model2rent_metrics_dict = {
         'model_id'    : model_id_list,
         'model'       : model_list,
-        'train_score' : train_score_list_rent,
-        'test_score'  : test_score_list_rent,
         'R2'          : R2_list_rent,
         'RMSE'        : RMSE_list_rent,
         'MAE'         : MAE_list_rent,
@@ -246,19 +245,11 @@ elif type_input == 'Multi Models':
     rent_metrics_df = pd.DataFrame.from_dict(model2rent_metrics_dict)
 
     st.sidebar.subheader('Metrics')
-    train_score = st.sidebar.checkbox('Train Score')
-    test_score = st.sidebar.checkbox('Test Score')
     R2 = st.sidebar.checkbox('R2')
     RMSE = st.sidebar.checkbox('RMSE')
     MAE = st.sidebar.checkbox('MAE')
     MAPE = st.sidebar.checkbox('MAPE')
 
-    if train_score:
-        col1.bar_chart(data=sale_metrics_df, x='model', y='train_score')
-        col2.bar_chart(data=rent_metrics_df, x='model', y='train_score')
-    if test_score:
-        col1.bar_chart(data=sale_metrics_df, x='model', y='test_score')
-        col2.bar_chart(data=rent_metrics_df, x='model', y='test_score')
     if R2:
         col1.bar_chart(data=sale_metrics_df, x='model', y='R2')
         col2.bar_chart(data=rent_metrics_df, x='model', y='R2')

@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.preprocessing import OneHotEncoder
+from xgboost import XGBRegressor
 
 import pickle
 
@@ -71,24 +71,24 @@ with open(r'rent_ohe.pkl','wb') as rent_ohe_pkl:
 
 #========== Creating MODEL ==========#
 PARAMETERS = {
-    'ccp_alpha': 0.1,
-    'loss': 'squared_error',
-    'max_depth': 10,
-    'min_samples_leaf': 2,
-    'min_samples_split': 2,
-    'min_weight_fraction_leaf': 0.0,
-    'n_estimators': 100,
-    'validation_fraction': 0.25,
+    'alpha': 0.2,
+    'colsample_bytree': 0.9,
+    'eta': 0.2,
+    'lambda': 1.0,
+    'max_depth': 5,
+    'n_estimators': 300,
+    'subsample': 0.8,
+
 }
 
-sale_model = GradientBoostingRegressor()
+sale_model = XGBRegressor()
 sale_model.set_params(**PARAMETERS)
 sale_model.fit(sale_x_train,sale_y_train)
 with open(r'sale_model.pkl','wb') as sale_model_pkl:
     pickle.dump(sale_model, sale_model_pkl, protocol=2)
 
-rent_model = GradientBoostingRegressor()
-rent_model.set_params(**    PARAMETERS)
+rent_model = XGBRegressor()
+rent_model.set_params(**PARAMETERS)
 rent_model.fit(rent_x_train,rent_y_train)
 with open(r'rent_model.pkl','wb') as rent_model_pkl:
     pickle.dump(rent_model, rent_model_pkl, protocol=2)

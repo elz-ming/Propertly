@@ -23,12 +23,6 @@ def feature_engineering(DataFrame):
     one_hot = pd.get_dummies(df[['district','state','type','details']])
     df = df.join(one_hot).drop(['district','state','type','details'], axis=1)
 
-    #4 MinMaxScale numerical features
-    for num in df.dtypes[(df.dtypes == "int64")].index:
-        MMS = MinMaxScaler()
-        MMS.fit(df[[num]])
-        df[num] = MMS.transform(df[[num]])
-
     return df
 
 def regressor(Model, Hyperparameters, x_train, x_test, y_train, y_test):
@@ -38,8 +32,6 @@ def regressor(Model, Hyperparameters, x_train, x_test, y_train, y_test):
     y_pred = model.predict(x_test)
 
     metrics_dict = {
-        'train_score' : model.score(x_train,y_train),
-        'test_score'  : model.score(x_test,y_test),
         'R2'    : r2_score(y_test, y_pred),
         'RMSE'  : mean_squared_error(y_test, y_pred, squared=False),
         'MAE'   : mean_absolute_error(y_test, y_pred),
