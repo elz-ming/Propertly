@@ -14,3 +14,4 @@ Even so, as Malaysia slowly opens up, some decisions have to be made such as :
 These are good questions without good answers, but my project here will provide a solution to the concerns above. View the video below to learn more!
 
 ## YouTube video
+https://youtu.be/3qtJOOyKAP0
