@@ -15,3 +15,6 @@ These are good questions without good answers, but my project here will provide 
 
 ## YouTube video
 https://youtu.be/3qtJOOyKAP0
+
+## Contacts
+**Edmund Lin** >>> https://www.linkedin.com/in/edmund-lin-8710331b9/
